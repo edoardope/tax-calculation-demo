@@ -11,7 +11,7 @@ class ProductSeeder extends Seeder
     public function run()
     {
         
-        $response = Http::get('https://instilla-sales-tax-problem.s3.eu-central-1.amazonaws.com/sales-tax-problem-test.json');
+        $response = Http::get('http://instilla-sales-tax-problem.s3.eu-central-1.amazonaws.com/sales-tax-problem-test.json');
         $products = $response->json();  
 
         foreach ($products as $productData) {
