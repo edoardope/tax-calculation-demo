@@ -77,7 +77,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+  
     document.getElementById('generate-receipt').addEventListener('click', function () {
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', {action: 'submit'}).then(function(token) {
+                generateReceiptWithCaptcha(token);  
+            });
+        });
+    });
+
+    function generateReceiptWithCaptcha(token) {
         const selectedItemIds = selectedItems.map(item => item.id);
 
         fetch('http://localhost:8000/api/calculate', {
@@ -85,14 +94,14 @@ document.addEventListener('DOMContentLoaded', function () {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ items: selectedItemIds })
+            body: JSON.stringify({ items: selectedItemIds, recaptcha_token: token })
         })
         .then(response => response.json())
         .then(data => {
             displayReceipt(data);
         })
         .catch(error => console.error('Error generating receipt:', error));
-    });
+    }
 
     function displayReceipt(data) {
         const receiptDiv = document.getElementById('receipt');
