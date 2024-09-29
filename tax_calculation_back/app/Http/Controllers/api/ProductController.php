@@ -7,6 +7,31 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    public function index(Request $request)
+    {
+
+        $products = Product::query();
+
+        if ($request->has('search')) {
+            $searchTerm = strtolower($request->input('search'));
+            $products->where('name', 'like', "%{$searchTerm}%");
+        }
+
+        if ($request->has('category')) {
+            $products->where('category', $request->input('category'));
+        }
+
+        if ($request->has('min_price')) {
+            $products->where('price', '>=', $request->input('min_price'));
+        }
+
+        if ($request->has('max_price')) {
+            $products->where('price', '<=', $request->input('max_price'));
+        }
+
+        return response()->json($products->get());
+    }
+
     public function calculateTaxes(Request $request)
     {
         $items = $request->input('items');
