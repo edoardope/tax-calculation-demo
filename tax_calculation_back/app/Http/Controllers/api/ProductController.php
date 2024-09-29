@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
@@ -59,5 +60,25 @@ class ProductController extends Controller
             'total' => round($total, 2),
             'total_tax' => round($totalTax, 2),
         ]);
+    }
+
+    public function addImported(Request $request)
+    {
+        $itemId = $request->input('itemid');
+        $product = Product::find($itemId);
+    
+        if ($product) {
+
+            $product->imported = !$product->imported;
+            $product->save();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Stato imported aggiornato',
+                'imported' => $product->imported,
+            ]);
+        }
+    
+        return response()->json(['success' => false, 'message' => 'Prodotto non trovato'], 404);
     }
 }

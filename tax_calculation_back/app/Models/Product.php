@@ -26,6 +26,7 @@ class Product extends Model
         'price',
         'category',
         'image',
+        'imported'
     ];
 
     /**

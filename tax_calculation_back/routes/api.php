@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::post('/calculate', [ProductController::class, 'calculateTaxes']);
+Route::post('/imported', [ProductController::class, 'addImported']);
