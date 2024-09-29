@@ -8,17 +8,48 @@
 </head>
 <body>
     <h1>Product Catalog</h1>
-    <div id="product-list"></div>
 
-    <h2>Selected Products</h2>
-    <div id="selected-products"></div>
+    <!-- Search and Filter Form -->
+    <div id="filters" class="filter-container">
+        <input type="text" id="search" placeholder="Search by name">
+        <select id="category">
+            <option value="">All Categories</option>
+            <option value="books">Books</option>
+            <option value="food">Food</option>
+            <option value="medical-products">Medical Products</option>
+            <option value="other">Other</option>
+        </select>
+        <input type="number" id="min-price" placeholder="Min Price">
+        <input type="number" id="max-price" placeholder="Max Price">
+        <button id="apply-filters">Apply Filters</button>
+    </div>
 
-    <h2>Generate Receipt</h2>
+    <div id="product-grid" class="grid-container"></div>
+
+    <h2>Selected products</h2>
+    
+    <table id="selected-products-table" class="selected-products-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Imported</th>
+                <th>Price</th>
+                <th>Tax</th>
+                <th></th> <!-- Colonna per il pulsante di rimozione -->
+            </tr>
+        </thead>
+        <tbody id="selected-products"></tbody>
+    </table>
+    
+    <div id="receipt-summary">
+        <h2>Receipt</h2>
+        <div id="receipt">
+            <!-- Lo scontrino generato sarà visualizzato qui -->
+        </div>
+    </div>
+    
     <button id="generate-receipt">Generate Receipt</button>
-
-    <h2>Receipt</h2>
-    <div id="receipt"></div>
-
-    <script src="script.js"></script>
-</body>
+    
+        <script src="script.js"></script>
+    </body>
 </html>

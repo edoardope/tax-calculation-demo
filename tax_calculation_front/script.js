@@ -2,10 +2,25 @@ document.addEventListener('DOMContentLoaded', function () {
     let products = [];
     let selectedItems = [];
 
-    function fetchProducts() {
-        fetch('http://localhost:8000/api/products')
+    function fetchProducts(search = '', category = '', minPrice = '', maxPrice = '') {
+        let url = 'http://localhost:8000/api/products';
+
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (category) params.append('category', category);
+        if (minPrice) params.append('min_price', minPrice);
+        if (maxPrice) params.append('max_price', maxPrice);
+
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        console.log('Fetching products with URL:', url);  
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
+                console.log(data);  
                 products = data;
                 displayProducts();
             })
@@ -13,43 +28,52 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displayProducts() {
-        const productList = document.getElementById('product-list');
-        productList.innerHTML = '';
+        const productGrid = document.getElementById('product-grid');
+        productGrid.innerHTML = '';  
         products.forEach(product => {
             const productDiv = document.createElement('div');
+            productDiv.classList.add('product-item');
             productDiv.innerHTML = `
-                <strong>${product.name}</strong> - $${product.price} 
-                <span>Imported: ${product.imported ? 'Yes' : 'No'}</span>
-                <button onclick="toggleImported(${product.id})">${product.imported ? 'Remove Imported' : 'Add Imported'}</button>
+                <img src="${product.image}" alt="${product.name}">
+                <span class="category-label">${product.category.toUpperCase()}</span>
+                <h3>${product.name}</h3>
+                <p class="price">$${product.price}</p>
+                <label>
+                    <input type="checkbox" ${product.imported ? 'checked' : ''} onchange="toggleImported(${product.id})">
+                    Apply import duty
+                </label>
                 <button onclick="addToCart(${product.id})">Add to Cart</button>
             `;
-            productList.appendChild(productDiv);
+            productGrid.appendChild(productDiv);
         });
     }
 
     window.addToCart = function (id) {
         const selectedProduct = products.find(product => product.id === id);
         if (!selectedItems.some(item => item.id === id)) {
-            selectedItems.push(selectedProduct);  
+            selectedItems.push(selectedProduct);
         }
         displaySelectedProducts();
     };
 
     window.removeFromCart = function (id) {
-        selectedItems = selectedItems.filter(item => item.id !== id);  
+        selectedItems = selectedItems.filter(item => item.id !== id);
         displaySelectedProducts();
     };
 
     function displaySelectedProducts() {
-        const selectedList = document.getElementById('selected-products');
-        selectedList.innerHTML = '';
+        const selectedProductsTable = document.getElementById('selected-products');
+        selectedProductsTable.innerHTML = '';  
         selectedItems.forEach(product => {
-            const itemDiv = document.createElement('div');
-            itemDiv.innerHTML = `
-                ${product.name} - $${product.price}
-                <button onclick="removeFromCart(${product.id})">Remove from Cart</button>
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.imported ? 'Yes' : 'No'}</td>
+                <td>$${product.price}</td>
+                <td>$${product.tax || 0.00}</td>
+                <td><span class="delete-btn" onclick="removeFromCart(${product.id})">🗑️</span></td>
             `;
-            selectedList.appendChild(itemDiv);
+            selectedProductsTable.appendChild(row);
         });
     }
 
@@ -59,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('http://localhost:8000/api/calculate', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ items: selectedItemIds })
         })
@@ -84,19 +108,28 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('http://localhost:8000/api/imported', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ itemid: id })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(`Imported status updated to: ${data.imported ? 'Yes' : 'No'}`);
                 fetchProducts();  
             }
         })
         .catch(error => console.error('Error toggling imported status:', error));
     };
+
+    document.getElementById('apply-filters').addEventListener('click', function () {
+        const search = document.getElementById('search').value;
+        const category = document.getElementById('category').value;
+        const minPrice = document.getElementById('min-price').value;
+        const maxPrice = document.getElementById('max-price').value;
+
+        console.log(`Search: ${search}, Category: ${category}, Min Price: ${minPrice}, Max Price: ${maxPrice}`);
+        fetchProducts(search, category, minPrice, maxPrice);  
+    });
 
     fetchProducts();
 });
