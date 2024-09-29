@@ -64,6 +64,8 @@ This project is a simple web-based tax calculation application consisting of a b
    ```bash
    php artisan db:seed
 
+this will seed the database whit product from the following api: https://instilla-sales-tax-problem.s3.eu-central-1.amazonaws.com/sales-tax-problem-test.json
+
 8. **Start the backend server**:
 
    ```bash
